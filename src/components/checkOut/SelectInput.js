@@ -26,20 +26,8 @@ const MenuProps = {
   },
 };
 
-function rupiah(bilangan) {
-  var number_string = bilangan.toString(),
-    sisa = number_string.length % 3,
-    rupiah = number_string.substr(0, sisa),
-    ribuan = number_string.substr(sisa).match(/\d{3}/g);
-  if (ribuan) {
-    var separator = sisa ? "." : "";
-    rupiah += separator + ribuan.join(".");
-  }
-  return rupiah;
-}
-export function SelectInput({ id, rooms, cbRoom, title, value, harga }) {
+export function SelectInput({ id, rooms, cbRoom, title, value }) {
   const classes = useStyles();
-
   const [data, setdata] = React.useState(value);
 
   const handleChange = (event) => {
@@ -59,17 +47,12 @@ export function SelectInput({ id, rooms, cbRoom, title, value, harga }) {
           onChange={handleChange}
           MenuProps={MenuProps}
         >
-          <MenuItem key={0} value={value}>
-            {value !== 0 ? value : "..."}
-          </MenuItem>
-          {rooms.map((room, index) => (
-            <MenuItem key={index} value={room}>
-              <strong>{room} </strong>
-              {id === "roomType"
-                ? `- Rp.${rupiah(harga[room])} /per malam`
-                : ""}
-            </MenuItem>
-          ))}
+          {rooms &&
+            rooms.map((room, index) => (
+              <MenuItem key={index} value={room}>
+                {room}
+              </MenuItem>
+            ))}
         </Select>
       </FormControl>
     </div>

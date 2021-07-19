@@ -11,6 +11,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { actionLogin } from "../config/redux/actions/authAction";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -25,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(1),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -39,25 +41,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Register() {
+export default function Login() {
   const classes = useStyles();
   const history = useHistory();
+  const dispatch = useDispatch();
 
-  const [form, setform] = React.useState({ name: "", email: "", password: "" });
-  const [isloading, setisloading] = React.useState(false);
-
-  console.log("isi form: ", form);
+  const [form, setform] = React.useState({ email: null, password: "" });
+  const { isLoading: isloading, error } = useSelector((state) => state.auth);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setform({ ...form, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("submit");
     //panggil api untuk submit
-    history.push("/dashboard");
+    const res = await dispatch(actionLogin(form));
+    if (res) {
+      console.log("kuy redirect!");
+      history.push("/");
+    }
   };
 
   return (
@@ -69,64 +73,51 @@ export default function Register() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Register
+            Login
           </Typography>
           <form className={classes.form} noValidate>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  autoComplete="fname"
-                  name="name"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="name"
-                  label="Your Name"
-                  autoFocus
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  onChange={handleChange}
-                />
-              </Grid>
-            </Grid>
+            <TextField
+              error={!error}
+              helperText={error.message}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              onChange={handleChange}
+            />
+            <TextField
+              error={error.error}
+              helperText={error.message}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              onChange={handleChange}
+            />
             <Button
               type="submit"
-              disabled={isloading}
               fullWidth
               variant="contained"
               color="primary"
-              onClick={handleSubmit}
               className={classes.submit}
+              onClick={handleSubmit}
             >
-              {isloading ? "loading..." : "Register"}
+              {isloading ? "loading..." : "Login"}
             </Button>
-            <Grid container justifyContent="flex-end">
+            <Grid container>
               <Grid item>
-                <Link href="#" variant="body2">
-                  Already have an account? Sign in
+                <Link href="/register" variant="body2">
+                  {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
             </Grid>

@@ -1,12 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
-import { MomentLocalizationExample } from "./DatePicker";
+// import { MomentLocalizationExample } from "./DatePicker";
 import { SelectInput } from "./SelectInput";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,46 +30,60 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function Reserve({ title, harga }) {
-  const today = new Date();
+export function Reserve({
+  title,
+  dispatchRoom,
+  dispatch,
+  roomId,
+  roomType,
+  data,
+  harga,
+  isloading,
+}) {
   const classes = useStyles();
   const history = useHistory();
+  // console.log("isi dari state pada page isian", data);
 
   const [form, setform] = React.useState({
-    checkIn: "",
-    checkOut: "",
-    name: "",
-    handphone: "",
-    roomType: "",
-    roomId: "",
+    id: data.id ? data.id : null,
+    name: data.name ? data.name : null,
+    phone: data.phone ? data.phone : null,
+    roomType: data.roomType ? data.roomType : null,
+    roomId: 0,
+    checkIn: data.checkIn ? data.checkIn : null,
+    oldRoomId: data.roomId ? data.roomId : 0,
   });
-  const [isloading, setisloading] = React.useState(false);
+
+  useEffect(() => {
+    dispatchRoom(form.roomType);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setform({ ...form, [name]: value });
   };
 
-  const handelDate = ({ value, id }) => {
-    setform({ ...form, [id]: value });
-  };
-
   const handleSelect = ({ value, id }) => {
+    console.log("handle select");
     setform({ ...form, [id]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!form.checkIn) {
-      setform({ ...form, checkIn: today });
-    } else {
-      setform({ ...form, checkOut: today });
+    if (id === "roomType") {
+      dispatchRoom(value);
     }
-    console.log("isi form: ", form);
-    //panggil api untuk submit
-
-    // history.push("/");
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await dispatch(form);
+      console.log("kuy redirect!");
+      history.push("/");
+    } catch (err) {
+      console.log(err.response.data.message);
+      window.alert(err.response.data.message);
+    }
+  };
+
+  console.log("si data form: ", form);
 
   return (
     <div className={classes.paper}>
@@ -87,17 +100,19 @@ export function Reserve({ title, harga }) {
               fullWidth
               id="name"
               label="Name"
+              value={form.name}
               onChange={handleChange}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
-              name="handphone"
+              name="phone"
               variant="outlined"
               required
               fullWidth
-              id="handphone"
+              id="phone"
               label="number phone"
+              value={form.phone}
               onChange={handleChange}
             />
           </Grid>
@@ -106,7 +121,9 @@ export function Reserve({ title, harga }) {
               title="Room Type"
               id="roomType"
               cbRoom={handleSelect}
-              rooms={["Double Bed", "Single Bed", "Premium", "VIP"]}
+              value={form.roomType}
+              rooms={roomType}
+              harga={harga}
             />
           </Grid>
           <Grid item xs={12}>
@@ -114,20 +131,10 @@ export function Reserve({ title, harga }) {
               title="Room ID"
               id="roomId"
               cbRoom={handleSelect}
-              rooms={[10, 11, 12, 13, 14, 15, 16, 17, 18]}
+              value={form.oldRoomId}
+              rooms={roomId}
             />
           </Grid>
-          {harga && (
-            <Grid item xs={12}>
-              <Typography
-                variant="h4"
-                color="secondary"
-                className={classes.biaya}
-              >
-                {`Total Biaya: Rp. ${harga},-`}
-              </Typography>
-            </Grid>
-          )}
         </Grid>
 
         <Button
@@ -139,7 +146,7 @@ export function Reserve({ title, harga }) {
           onClick={handleSubmit}
           className={classes.submit}
         >
-          {isloading ? "loading..." : harga ? "CheckIn" : "CheckOut"}
+          {isloading ? "loading..." : form.name ? "Edit Reserve" : "CheckIn"}
         </Button>
       </form>
     </div>

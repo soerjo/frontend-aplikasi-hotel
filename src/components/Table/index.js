@@ -1,6 +1,6 @@
 import React from "react";
-import Link from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -12,114 +12,7 @@ import InputBase from "@material-ui/core/InputBase";
 import IconButton from "@material-ui/core/IconButton";
 import SearchIcon from "@material-ui/icons/Search";
 import TableContainer from "@material-ui/core/TableContainer";
-
-// Generate Order Data
-function createData(id, date, name, shipTo, paymentMethod, amount) {
-  return { id, date, name, shipTo, paymentMethod, amount };
-}
-
-const rows = [
-  createData(
-    0,
-    "16 Mar, 2019",
-    "Elvis Presley",
-    "Tupelo, MS",
-    "VISA ⠀•••• 3719",
-    312.44
-  ),
-  createData(
-    1,
-    "16 Mar, 2019",
-    "Paul McCartney",
-    "London, UK",
-    "VISA ⠀•••• 2574",
-    866.99
-  ),
-  createData(
-    2,
-    "16 Mar, 2019",
-    "Tom Scholz",
-    "Boston, MA",
-    "MC ⠀•••• 1253",
-    100.81
-  ),
-  createData(
-    3,
-    "16 Mar, 2019",
-    "Michael Jackson",
-    "Gary, IN",
-    "AMEX ⠀•••• 2000",
-    654.39
-  ),
-  createData(
-    4,
-    "15 Mar, 2019",
-    "Bruce Springsteen",
-    "Long Branch, NJ",
-    "VISA ⠀•••• 5919",
-    212.79
-  ),
-  createData(
-    4,
-    "15 Mar, 2019",
-    "Bruce Springsteen",
-    "Long Branch, NJ",
-    "VISA ⠀•••• 5919",
-    212.79
-  ),
-  createData(
-    4,
-    "15 Mar, 2019",
-    "Bruce Springsteen",
-    "Long Branch, NJ",
-    "VISA ⠀•••• 5919",
-    212.79
-  ),
-  createData(
-    4,
-    "15 Mar, 2019",
-    "Bruce Springsteen",
-    "Long Branch, NJ",
-    "VISA ⠀•••• 5919",
-    212.79
-  ),
-  createData(
-    4,
-    "15 Mar, 2019",
-    "Bruce Springsteen",
-    "Long Branch, NJ",
-    "VISA ⠀•••• 5919",
-    212.79
-  ),
-  createData(
-    4,
-    "15 Mar, 2019",
-    "Bruce Springsteen",
-    "Long Branch, NJ",
-    "VISA ⠀•••• 5919",
-    212.79
-  ),
-  createData(
-    4,
-    "15 Mar, 2019",
-    "Bruce Springsteen",
-    "Long Branch, NJ",
-    "VISA ⠀•••• 5919",
-    212.79
-  ),
-  createData(
-    4,
-    "15 Mar, 2019",
-    "Bruce Springsteen",
-    "Long Branch, NJ",
-    "VISA ⠀•••• 5919",
-    212.79
-  ),
-];
-
-function preventDefault(event) {
-  event.preventDefault();
-}
+import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -145,12 +38,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function Orders({ title, datas = rows }) {
+export function Orders({ title, data, isloading }) {
+  const history = useHistory();
   const classes = useStyles();
 
   const handleChange = (e) => {
     console.log("value: ", e.target.value);
     //panggil api search data
+  };
+
+  const handleCheckOut = (value) => {
+    history.push({
+      pathname: "/checkout",
+      id: value.id,
+    });
+  };
+
+  const handleEdit = (value) => {
+    history.push({
+      pathname: "/edit",
+      state: { ...value },
+    });
   };
 
   return (
@@ -176,26 +84,66 @@ export function Orders({ title, datas = rows }) {
             <TableRow>
               <TableCell>Nama</TableCell>
               <TableCell>No Telephone</TableCell>
-              <TableCell>Kamar ID</TableCell>
-              <TableCell>Tipe Kamar</TableCell>
-              <TableCell>CheckIn</TableCell>
-              {title === "Reports" ? <TableCell>CheckOut</TableCell> : ""}
+              <TableCell align="center">Kamar ID</TableCell>
+              <TableCell align="center">Tipe Kamar</TableCell>
+              <TableCell align="center">CheckIn</TableCell>
+              {title === "Reserve" ? (
+                <TableCell align="center">Action</TableCell>
+              ) : (
+                ""
+              )}
+              {title === "Reports" ? (
+                <TableCell align="center">CheckOut</TableCell>
+              ) : (
+                ""
+              )}
               {title === "Reports" ? <TableCell>Total Biaya</TableCell> : ""}
             </TableRow>
           </TableHead>
           <TableBody>
-            {datas &&
-              datas.map((row) => (
-                <TableRow
-                  className={classes.rowtable}
-                  hover
-                  key={row.id}
-                  onClick={() => console.log(row.id)}
-                >
-                  <TableCell>{row.date}</TableCell>
+            {isloading && "loading..."}
+            {data &&
+              data.map((row) => (
+                <TableRow key={row.id} className={classes.rowtable} hover>
                   <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.shipTo}</TableCell>
-                  <TableCell>{row.paymentMethod}</TableCell>
+                  <TableCell>{row.phone}</TableCell>
+                  <TableCell align="center">{row.roomId}</TableCell>
+                  <TableCell align="center">{row.roomType}</TableCell>
+                  <TableCell align="center">{row.checkIn}</TableCell>
+                  {title === "Reserve" ? (
+                    <TableCell align="center">
+                      <Button
+                        size="small"
+                        className={classes.margin}
+                        color="primary"
+                        onClick={() => handleEdit(row)}
+                      >
+                        Edit
+                      </Button>
+                      {" | "}
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        className={classes.margin}
+                        color="secondary"
+                        onClick={() => handleCheckOut(row)}
+                      >
+                        CheckOut
+                      </Button>
+                    </TableCell>
+                  ) : (
+                    ""
+                  )}
+                  {title === "Reports" ? (
+                    <TableCell align="center">{row.checkOut}</TableCell>
+                  ) : (
+                    ""
+                  )}
+                  {title === "Reports" ? (
+                    <TableCell>{row.biaya}</TableCell>
+                  ) : (
+                    ""
+                  )}
                   {/* table cell checkout pada reserve itu ndak di kasih liat */}
                 </TableRow>
               ))}

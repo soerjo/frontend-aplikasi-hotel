@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { Drawer } from "../components/Drawer";
@@ -8,6 +8,8 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { deepOrange } from "@material-ui/core/colors";
+import { useSelector, useDispatch } from "react-redux";
+import { getCheckOut } from "../config/redux/actions/checkOutAction";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,12 +40,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Reports() {
+export default function Reports({ user }) {
   const classes = useStyles();
+
+  const dispatch = useDispatch();
+  const { reports } = useSelector((state) => state.checkOut);
+  useEffect(() => {
+    dispatch(getCheckOut());
+  }, [dispatch]);
+
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
+
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -55,6 +65,7 @@ export default function Reports() {
         open={open}
         handleDrawerOpen={handleDrawerOpen}
         title="Admin Hotel"
+        user={user.name}
       />
       <Drawer handleDrawerClose={handleDrawerClose} open={open} />
       <main className={classes.content}>
@@ -64,7 +75,7 @@ export default function Reports() {
             {/* Recent Orders */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Orders title="Reports" />
+                <Orders title="Reports" data={reports} />
               </Paper>
             </Grid>
           </Grid>

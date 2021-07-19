@@ -4,7 +4,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import { MdHotel } from "react-icons/md";
 import { SiHotelsDotCom } from "react-icons/si";
-import { BsFillPeopleFill } from "react-icons/bs";
+// import { BsFillPeopleFill } from "react-icons/bs";
 import { HiDocumentReport } from "react-icons/hi";
 import { makeStyles } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
@@ -20,11 +20,11 @@ const menus = [
     icon: <MdHotel />,
     link: "/checkin",
   },
-  {
-    title: "CheckOut",
-    icon: <BsFillPeopleFill />,
-    link: "/checkout",
-  },
+  // {
+  //   title: "CheckOut",
+  //   icon: <BsFillPeopleFill />,
+  //   link: "/",
+  // },
   {
     title: "Reports",
     icon: <HiDocumentReport />,

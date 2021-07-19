@@ -8,6 +8,7 @@ import Avatar from "@material-ui/core/Avatar";
 import MenuIcon from "@material-ui/icons/Menu";
 import IconButton from "@material-ui/core/IconButton";
 import { deepOrange } from "@material-ui/core/colors";
+import { useHistory } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -54,6 +55,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const AppBar = ({ open, handleDrawerOpen, title, user }) => {
   const classes = useStyles();
+  const history = useHistory();
+
   return (
     <div>
       <Bar
@@ -84,11 +87,19 @@ export const AppBar = ({ open, handleDrawerOpen, title, user }) => {
           </Typography>
           <IconButton color="inherit">
             <Avatar
-              alt={"User" || user} //akan jadi nama yang login
+              alt={user.toUpperCase()} //akan jadi nama yang login
               src="/broken-image.jpg"
               className={classes.orange}
             />
           </IconButton>
+          <Typography
+            variant="h6"
+            noWrap
+            onClick={() => history.push("/login")}
+            style={{ color: "white", cursor: "pointer" }}
+          >
+            Log Out
+          </Typography>
         </Toolbar>
       </Bar>
     </div>
